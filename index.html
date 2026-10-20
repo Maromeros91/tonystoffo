@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>"Hey, I could do this for a living."</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success-bg: #dcfce7;
+            --success-text: #166534;
+            --danger-bg: #fee2e2;
+            --danger-text: #991b1b;
+            --header-bg: #0f172a;
+            --header-text: #ffffff;
+            --input-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success-bg: #064e3b;
+            --success-text: #6ee7b7;
+            --danger-bg: #7f1d1d;
+            --danger-text: #fca5a5;
+            --header-bg: #020617;
+            --header-text: #ffffff;
+            --input-bg: #0f172a;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .header-flex h2 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.8rem;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+            transition: background 0.3s, border 0.3s;
+        }
+
+        .card .title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .card .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-top: 5px;
+        }
+
+        .controls {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-color);
+        }
+
+        .form-group input, .form-group select {
+            padding: 9px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-success:hover { background: #15803d; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-secondary { background: #475569; color: white; }
+        .btn-secondary:hover { background: #334155; }
+        .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+
+        .filter-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .filter-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--header-bg);
+            color: var(--header-text);
+            border-color: var(--header-bg);
+        }
+
+        .table-responsive {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--header-bg);
+            color: var(--header-text);
+            padding: 14px 12px;
+            font-weight: 600;
+            text-align: center !important;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
+            text-align: center !important;
+        }
+
+        .badge-win {
+            background: var(--success-bg);
+            color: var(--success-text);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-loss {
+            background: var(--danger-bg);
+            color: var(--danger-text);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-s1 {
+            background: #e2e8f0;
+            color: #1e293b;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-s2 {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .info-panel {
+            background: var(--card-bg);
+            border-left: 4px solid var(--primary);
+            padding: 14px 18px;
+            margin-bottom: 25px;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.95rem;
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+<div class="container">
+    <div class="header-flex">
+        <h2>📊 "Hey, I could do this for a living." 🎯🏈⚾</h2>
+        <button class="theme-toggle" onclick="toggleTheme()">🌓 Cambiar Tema</button>
+    </div>
+    
+    <div class="info-panel">
+        <div><strong>Serie 1 Vigente:</strong> <span id="info-s1">100-50-100</span></div>
+        <div><strong>Serie 2 Vigente:</strong> <span id="info-s2">100-50-100</span></div>
+        <div><strong>Objetivo Mensual:</strong> $<span id="info-target">400.00</span></div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard">
+        <div class="card">
+            <div class="title">Balance Total</div>
+            <div class="value" id="disp-balance">$0.00</div>
+        </div>
+        <div class="card">
+            <div class="title">Efectividad</div>
+            <div class="value" id="disp-eff">0.00%</div>
+        </div>
+        <div class="card">
+            <div class="title">Récord (G - P)</div>
+            <div class="value" id="disp-record">0 - 0</div>
+        </div>
+        <div class="card">
+            <div class="title">Progreso Objetivo</div>
+            <div class="value" id="disp-progress">0.00%</div>
+        </div>
+    </div>
+
+    <!-- Configuración -->
+    <div class="controls">
+        <h3>1. Configuración de Parámetros</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="base-a1">Base Exterior 'a' (Serie 1)</label>
+                <input type="number" id="base-a1" value="100" step="10">
+            </div>
+            <div class="form-group">
+                <label for="base-a2">Base Exterior 'a' (Serie 2)</label>
+                <input type="number" id="base-a2" value="100" step="10">
+            </div>
+            <div class="form-group">
+                <label for="target-input">Objetivo Mensual ($)</label>
+                <input type="number" id="target-input" value="400" step="50">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-secondary" onclick="updateConfig()">Guardar Configuración</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registro de Apuesta -->
+    <div class="controls">
+        <h3>2. Registrar Nueva Apuesta</h3>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="input-series-select">Asignar a Serie</label>
+                <select id="input-series-select" onchange="onSeriesChange()">
+                    <option value="1">Serie 1</option>
+                    <option value="2">Serie 2</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="input-date">Fecha</label>
+                <input type="date" id="input-date">
+            </div>
+            <div class="form-group">
+                <label for="input-pick">Pick / Selección</label>
+                <input type="text" id="input-pick" placeholder="Ej. Ravens ML">
+            </div>
+            <div class="form-group">
+                <label for="input-odds">Momio Americano</label>
+                <input type="number" id="input-odds" value="-110" step="1" onchange="validateOdds(this)" oninput="recalcRiskFromFixedToWin()">
+            </div>
+            <div class="form-group">
+                <label for="input-risk">Monto Apostado (Bet)</label>
+                <input type="number" id="input-risk" value="220" step="1" oninput="recalcOddsFromRisk()">
+            </div>
+            <div class="form-group">
+                <label for="input-towin">A Ganar Estimado (To Win)</label>
+                <input type="number" id="input-towin" value="200" step="1" readonly style="font-weight: 700;">
+            </div>
+            <div class="form-group">
+                <label for="input-result">Resultado</label>
+                <select id="input-result">
+                    <option value="W">Ganada (W)</option>
+                    <option value="L">Perdida (L)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-success" onclick="addBet()">Agregar Apuesta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtro de Tabla -->
+    <div class="filter-container">
+        <button class="filter-btn active" id="btn-filter-all" onclick="setFilter('all')">Todas las Series</button>
+        <button class="filter-btn" id="btn-filter-1" onclick="setFilter('1')">Solo Serie 1</button>
+        <button class="filter-btn" id="btn-filter-2" onclick="setFilter('2')">Solo Serie 2</button>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Fecha</th>
+                    <th>Serie</th>
+                    <th>Estado Serie</th>
+                    <th>Pick</th>
+                    <th>Momio</th>
+                    <th>Monto Apostado</th>
+                    <th>A Ganar</th>
+                    <th>Res.</th>
+                    <th>Ganancia / Pérdida</th>
+                    <th>Balance Acumulado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="bets-tbody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-primary" onclick="exportCSV()">Exportar a CSV</button>
+        <button class="btn btn-danger" onclick="clearData()">Borrar Historial</button>
+    </div>
+</div>
+
+<script>
+    let betsHistory = [];
+    let series1 = [100, 50, 100];
+    let series2 = [100, 50, 100];
+    let isInside1 = false;
+    let isInside2 = false;
+    let monthlyTarget = 400;
+    let activeFilter = 'all';
+
+    window.onload = function() {
+        document.getElementById('input-date').valueAsDate = new Date();
+        loadFromStorage();
+        loadTheme();
+    };
+
+    function toggleTheme() {
+        const body = document.body;
+        const currentTheme = body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('stoffo_theme', newTheme);
+    }
+
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('stoffo_theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+    }
+
+    function formatOdds(val) {
+        let num = parseFloat(val);
+        if (isNaN(num)) return val;
+        let formatted = num % 1 === 0 ? num.toFixed(0) : num.toFixed(2);
+        return num > 0 ? '+' + formatted : formatted;
+    }
+
+    function validateOdds(input) {
+        let val = parseInt(input.value);
+        if (isNaN(val)) return;
+
+        if (val > -100 && val < 0) {
+            input.value = val < -50 ? -100 : 100;
+        } else if (val >= 0 && val < 100) {
+            input.value = val >= 50 ? 100 : -100;
+        }
+        recalcRiskFromFixedToWin();
+    }
+
+    function getTargetToWin(seriesArr) {
+        if (seriesArr.length === 3) {
+            return seriesArr[0] + seriesArr[2];
+        } else if (seriesArr.length === 1) {
+            return seriesArr[0];
+        }
+        return 100;
+    }
+
+    function onSeriesChange() {
+        const sNum = document.getElementById('input-series-select').value;
+        const targetSeries = sNum === '1' ? series1 : series2;
+        const targetToWin = getTargetToWin(targetSeries);
+        
+        document.getElementById('input-towin').value = targetToWin.toFixed(2);
+        recalcRiskFromFixedToWin();
+    }
+
+    function recalcRiskFromFixedToWin() {
+        const odds = parseFloat(document.getElementById('input-odds').value) || -110;
+        const toWin = parseFloat(document.getElementById('input-towin').value) || 0;
+        let risk = 0;
+
+        if (odds < 0) {
+            risk = toWin * (Math.abs(odds) / 100);
+        } else {
+            risk = toWin / (odds / 100);
+        }
+        document.getElementById('input-risk').value = risk.toFixed(2);
+    }
+
+    function recalcOddsFromRisk() {
+        const risk = parseFloat(document.getElementById('input-risk').value) || 0;
+        const toWin = parseFloat(document.getElementById('input-towin').value) || 0;
+
+        if (risk <= 0 || toWin <= 0) return;
+
+        let odds = 0;
+        if (risk >= toWin) {
+            odds = - (risk / toWin) * 100;
+        } else {
+            odds = (toWin / risk) * 100;
+        }
+        document.getElementById('input-odds').value = odds.toFixed(2);
+    }
+
+    function setFilter(filter) {
+        activeFilter = filter;
+        document.getElementById('btn-filter-all').classList.toggle('active', filter === 'all');
+        document.getElementById('btn-filter-1').classList.toggle('active', filter === '1');
+        document.getElementById('btn-filter-2').classList.toggle('active', filter === '2');
+        render();
+    }
+
+    function updateConfig() {
+        const baseA1 = parseFloat(document.getElementById('base-a1').value) || 100;
+        const baseA2 = parseFloat(document.getElementById('base-a2').value) || 100;
+        monthlyTarget = parseFloat(document.getElementById('target-input').value) || 400;
+
+        if (betsHistory.length === 0) {
+            series1 = [baseA1, baseA1 / 2, baseA1];
+            series2 = [baseA2, baseA2 / 2, baseA2];
+            isInside1 = false;
+            isInside2 = false;
+        }
+
+        saveAndRender();
+    }
+
+    function addBet() {
+        const sNum = document.getElementById('input-series-select').value;
+        const date = document.getElementById('input-date').value;
+        const pick = document.getElementById('input-pick').value.trim() || 'Selección sin nombre';
+        const odds = parseFloat(document.getElementById('input-odds').value) || -110;
+        const risk = parseFloat(document.getElementById('input-risk').value) || 0;
+        const toWin = parseFloat(document.getElementById('input-towin').value) || 0;
+        const result = document.getElementById('input-result').value;
+
+        let pnl = (result === 'W') ? toWin : -risk;
+        let currentS = (sNum === '1') ? [...series1] : [...series2];
+
+        const betEntry = {
+            id: Date.now(),
+            assignedSeries: sNum,
+            date: date,
+            seriesStateBefore: currentS.join('-'),
+            pick: pick,
+            odds: odds,
+            risk: risk,
+            toWin: toWin,
+            result: result,
+            pnl: pnl
+        };
+
+        if (sNum === '1') {
+            updateSeriesState(1, result, risk);
+        } else {
+            updateSeriesState(2, result, risk);
+        }
+
+        betsHistory.push(betEntry);
+        saveAndRender();
+
+        document.getElementById('input-pick').value = '';
+    }
+
+    function updateSeriesState(sNum, result, riskAmount) {
+        let current = sNum === 1 ? [...series1] : [...series2];
+        let isInside = sNum === 1 ? isInside1 : isInside2;
+        const baseA = parseFloat(document.getElementById(`base-a${sNum}`).value) || 100;
+
+        if (result === 'W') {
+            if (!isInside && current.length === 3) {
+                current = [current[1]];
+                isInside = true;
+            } else {
+                current = [baseA, baseA / 2, baseA];
+                isInside = false;
+            }
+        } else {
+            if (current.length === 3) {
+                const addUnit = riskAmount / 3;
+                current = [
+                    parseFloat((current[0] + addUnit).toFixed(2)),
+                    parseFloat((current[1] + addUnit).toFixed(2)),
+                    parseFloat((current[2] + addUnit).toFixed(2))
+                ];
+            } else if (current.length === 1) {
+                const addUnit = riskAmount;
+                current = [parseFloat((current[0] + addUnit).toFixed(2))];
+            }
+        }
+
+        if (sNum === 1) {
+            series1 = current;
+            isInside1 = isInside;
+        } else {
+            series2 = current;
+            isInside2 = isInside;
+        }
+    }
+
+    function deleteBet(id) {
+        if (confirm('¿Estás seguro de eliminar esta apuesta? El historial se recalculará.')) {
+            rebuildHistoryFromScratch(id);
+        }
+    }
+
+    function rebuildHistoryFromScratch(excludeId) {
+        const baseA1 = parseFloat(document.getElementById('base-a1').value) || 100;
+        const baseA2 = parseFloat(document.getElementById('base-a2').value) || 100;
+        
+        series1 = [baseA1, baseA1 / 2, baseA1];
+        series2 = [baseA2, baseA2 / 2, baseA2];
+        isInside1 = false;
+        isInside2 = false;
+
+        let oldBets = [...betsHistory];
+        betsHistory = [];
+
+        oldBets.forEach(b => {
+            if (b.id !== excludeId) {
+                let sNum = b.assignedSeries;
+                let currentS = sNum === '1' ? [...series1] : [...series2];
+                b.seriesStateBefore = currentS.join('-');
+
+                if (sNum === '1') {
+                    updateSeriesState(1, b.result, b.risk);
+                } else {
+                    updateSeriesState(2, b.result, b.risk);
+                }
+                betsHistory.push(b);
+            }
+        });
+
+        saveAndRender();
+    }
+
+    function saveAndRender() {
+        localStorage.setItem('stoffo_dual_bets', JSON.stringify(betsHistory));
+        localStorage.setItem('stoffo_s1', JSON.stringify(series1));
+        localStorage.setItem('stoffo_s2', JSON.stringify(series2));
+        localStorage.setItem('stoffo_in1', JSON.stringify(isInside1));
+        localStorage.setItem('stoffo_in2', JSON.stringify(isInside2));
+        localStorage.setItem('stoffo_target', monthlyTarget.toString());
+        render();
+    }
+
+    function loadFromStorage() {
+        const savedBets = localStorage.getItem('stoffo_dual_bets');
+        const savedS1 = localStorage.getItem('stoffo_s1');
+        const savedS2 = localStorage.getItem('stoffo_s2');
+        const savedIn1 = localStorage.getItem('stoffo_in1');
+        const savedIn2 = localStorage.getItem('stoffo_in2');
+        const savedTarget = localStorage.getItem('stoffo_target');
+
+        if (savedBets) betsHistory = JSON.parse(savedBets);
+        if (savedS1) series1 = JSON.parse(savedS1);
+        if (savedS2) series2 = JSON.parse(savedS2);
+        if (savedIn1) isInside1 = JSON.parse(savedIn1);
+        if (savedIn2) isInside2 = JSON.parse(savedIn2);
+        if (savedTarget) {
+            monthlyTarget = parseFloat(savedTarget);
+            document.getElementById('target-input').value = monthlyTarget;
+        }
+
+        render();
+    }
+
+    function render() {
+        const tbody = document.getElementById('bets-tbody');
+        tbody.innerHTML = '';
+
+        let runningBalance = 0;
+        let wins = 0;
+        let losses = 0;
+
+        let evaluatedBets = betsHistory.map(b => {
+            runningBalance += b.pnl;
+            if (b.result === 'W') wins++;
+            if (b.result === 'L') losses++;
+            return { ...b, runningBalance: runningBalance };
+        });
+
+        const filteredBets = evaluatedBets.filter(b => {
+            if (activeFilter === 'all') return true;
+            return b.assignedSeries === activeFilter;
+        });
+
+        filteredBets.forEach((b, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${b.date}</td>
+                <td><span class="${b.assignedSeries === '1' ? 'badge-s1' : 'badge-s2'}">Serie ${b.assignedSeries}</span></td>
+                <td>${b.seriesStateBefore}</td>
+                <td>${b.pick}</td>
+                <td>${formatOdds(b.odds)}</td>
+                <td>$${b.risk.toFixed(2)}</td>
+                <td>$${b.toWin.toFixed(2)}</td>
+                <td><span class="${b.result === 'W' ? 'badge-win' : 'badge-loss'}">${b.result}</span></td>
+                <td style="color: ${b.pnl >= 0 ? 'var(--success-text)' : 'var(--danger-text)'}; font-weight: 600;">
+                    ${b.pnl >= 0 ? '+' : ''}$${b.pnl.toFixed(2)}
+                </td>
+                <td style="font-weight: 700;">$${b.runningBalance.toFixed(2)}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="deleteBet(${b.id})">Borrar</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        const totalGames = wins + losses;
+        const eff = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(2) : '0.00';
+        const progress = ((runningBalance / monthlyTarget) * 100).toFixed(2);
+
+        document.getElementById('disp-balance').innerText = `$${runningBalance.toFixed(2)}`;
+        document.getElementById('disp-eff').innerText = `${eff}%`;
+        document.getElementById('disp-record').innerText = `${wins} - ${losses}`;
+        document.getElementById('disp-progress').innerText = `${progress}%`;
+
+        document.getElementById('info-s1').innerText = series1.join('-');
+        document.getElementById('info-s2').innerText = series2.join('-');
+        document.getElementById('info-target').innerText = monthlyTarget.toFixed(2);
+
+        onSeriesChange();
+    }
+
+    function clearData() {
+        if (confirm('¿Deseas borrar todo el historial y reiniciar las series?')) {
+            betsHistory = [];
+            const baseA1 = parseFloat(document.getElementById('base-a1').value) || 100;
+            const baseA2 = parseFloat(document.getElementById('base-a2').value) || 100;
+            series1 = [baseA1, baseA1 / 2, baseA1];
+            series2 = [baseA2, baseA2 / 2, baseA2];
+            isInside1 = false;
+            isInside2 = false;
+            saveAndRender();
+        }
+    }
+
+    function exportCSV() {
+        if (betsHistory.length === 0) {
+            alert('No hay apuestas registradas para exportar.');
+            return;
+        }
+
+        let csv = 'Fecha,Serie,Estado Serie,Pick,Momio,Apostado,A Ganar,Resultado,PnL,Balance\n';
+        let runBalance = 0;
+
+        betsHistory.forEach(b => {
+            runBalance += b.pnl;
+            csv += `"${b.date}","Serie ${b.assignedSeries}","${b.seriesStateBefore}","${b.pick}",${formatOdds(b.odds)},${b.risk.toFixed(2)},${b.toWin.toFixed(2)},${b.result},${b.pnl.toFixed(2)},${runBalance.toFixed(2)}\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "seguimiento_apuestas_dual.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
