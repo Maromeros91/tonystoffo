@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>"Hey, I could do this for a living."</title>
     
-    <!-- Firebase SDKs (Compatibles con Realtime Database) -->
+    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
@@ -22,6 +22,8 @@
             --success-text: #166534;
             --danger-bg: #fee2e2;
             --danger-text: #991b1b;
+            --pending-bg: #fef3c7;
+            --pending-text: #92400e;
             --header-bg: #0f172a;
             --header-text: #ffffff;
             --input-bg: #ffffff;
@@ -39,6 +41,8 @@
             --success-text: #6ee7b7;
             --danger-bg: #7f1d1d;
             --danger-text: #fca5a5;
+            --pending-bg: #78350f;
+            --pending-text: #fde68a;
             --header-bg: #020617;
             --header-text: #ffffff;
             --input-bg: #0f172a;
@@ -150,7 +154,7 @@
         }
 
         .btn {
-            padding: 10px 16px;
+            padding: 8px 12px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -162,7 +166,7 @@
         .btn-success { background: #16a34a; color: white; }
         .btn-danger { background: #dc2626; color: white; }
         .btn-secondary { background: #475569; color: white; }
-        .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+        .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
 
         .filter-container {
             display: flex;
@@ -219,6 +223,7 @@
 
         .badge-win { background: var(--success-bg); color: var(--success-text); padding: 4px 8px; border-radius: 6px; font-weight: 700; display: inline-block; }
         .badge-loss { background: var(--danger-bg); color: var(--danger-text); padding: 4px 8px; border-radius: 6px; font-weight: 700; display: inline-block; }
+        .badge-pending { background: var(--pending-bg); color: var(--pending-text); padding: 4px 8px; border-radius: 6px; font-weight: 700; display: inline-block; }
         .badge-s1 { background: #e2e8f0; color: #1e293b; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-block; }
         .badge-s2 { background: #fef3c7; color: #92400e; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-block; }
 
@@ -251,6 +256,13 @@
             display: flex;
             align-items: center;
             gap: 5px;
+        }
+
+        .action-cell {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            align-items: center;
         }
     </style>
 </head>
@@ -345,8 +357,9 @@
                 <input type="number" id="input-towin" value="200" step="1" readonly style="font-weight: 700;">
             </div>
             <div class="form-group">
-                <label for="input-result">Resultado</label>
+                <label for="input-result">Estado Inicial</label>
                 <select id="input-result">
+                    <option value="P">Pendiente (P)</option>
                     <option value="W">Ganada (W)</option>
                     <option value="L">Perdida (L)</option>
                 </select>
@@ -427,14 +440,10 @@
             const data = snapshot.val();
             if (data) {
                 betsHistory = data.betsHistory || [];
-                series1 = data.series1 || [100, 50, 100];
-                series2 = data.series2 || [100, 50, 100];
-                isInside1 = data.isInside1 || false;
-                isInside2 = data.isInside2 || false;
                 monthlyTarget = data.monthlyTarget || 400;
                 document.getElementById('target-input').value = monthlyTarget;
             }
-            render();
+            rebuildAllState();
             document.getElementById('sync-indicator').innerText = '☁️ Nube Sincronizada';
         });
     }
@@ -538,17 +547,8 @@
     }
 
     function updateConfig() {
-        const baseA1 = parseFloat(document.getElementById('base-a1').value) || 100;
-        const baseA2 = parseFloat(document.getElementById('base-a2').value) || 100;
         monthlyTarget = parseFloat(document.getElementById('target-input').value) || 400;
-
-        if (betsHistory.length === 0) {
-            series1 = [baseA1, baseA1 / 2, baseA1];
-            series2 = [baseA2, baseA2 / 2, baseA2];
-            isInside1 = false;
-            isInside2 = false;
-        }
-
+        rebuildAllState();
         saveToCloud();
     }
 
@@ -561,32 +561,68 @@
         const toWin = parseFloat(document.getElementById('input-towin').value) || 0;
         const result = document.getElementById('input-result').value;
 
-        let pnl = (result === 'W') ? toWin : -risk;
-        let currentS = (sNum === '1') ? [...series1] : [...series2];
-
         const betEntry = {
             id: Date.now(),
             assignedSeries: sNum,
             date: date,
-            seriesStateBefore: currentS.join('-'),
             pick: pick,
             odds: odds,
             risk: risk,
             toWin: toWin,
-            result: result,
-            pnl: pnl
+            result: result
         };
 
-        if (sNum === '1') {
-            updateSeriesState(1, result, risk);
-        } else {
-            updateSeriesState(2, result, risk);
-        }
-
         betsHistory.push(betEntry);
+        rebuildAllState();
         saveToCloud();
 
         document.getElementById('input-pick').value = '';
+    }
+
+    function updateBetResult(id, newResult) {
+        const bet = betsHistory.find(b => b.id === id);
+        if (bet) {
+            bet.result = newResult;
+            rebuildAllState();
+            saveToCloud();
+        }
+    }
+
+    function deleteBet(id) {
+        if (confirm('¿Estás seguro de eliminar esta apuesta? El historial se recalculará.')) {
+            betsHistory = betsHistory.filter(b => b.id !== id);
+            rebuildAllState();
+            saveToCloud();
+        }
+    }
+
+    function rebuildAllState() {
+        const baseA1 = parseFloat(document.getElementById('base-a1').value) || 100;
+        const baseA2 = parseFloat(document.getElementById('base-a2').value) || 100;
+        
+        series1 = [baseA1, baseA1 / 2, baseA1];
+        series2 = [baseA2, baseA2 / 2, baseA2];
+        isInside1 = false;
+        isInside2 = false;
+
+        betsHistory.forEach(b => {
+            let sNum = b.assignedSeries;
+            let currentS = sNum === '1' ? [...series1] : [...series2];
+            b.seriesStateBefore = currentS.join('-');
+
+            if (b.result === 'P') {
+                b.pnl = 0;
+            } else {
+                b.pnl = (b.result === 'W') ? b.toWin : -b.risk;
+                if (sNum === '1') {
+                    updateSeriesState(1, b.result, b.risk);
+                } else {
+                    updateSeriesState(2, b.result, b.risk);
+                }
+            }
+        });
+
+        render();
     }
 
     function updateSeriesState(sNum, result, riskAmount) {
@@ -602,7 +638,7 @@
                 current = [baseA, baseA / 2, baseA];
                 isInside = false;
             }
-        } else {
+        } else if (result === 'L') {
             if (current.length === 3) {
                 const addUnit = riskAmount / 3;
                 current = [
@@ -625,42 +661,6 @@
         }
     }
 
-    function deleteBet(id) {
-        if (confirm('¿Estás seguro de eliminar esta apuesta? El historial se recalculará.')) {
-            rebuildHistoryFromScratch(id);
-        }
-    }
-
-    function rebuildHistoryFromScratch(excludeId) {
-        const baseA1 = parseFloat(document.getElementById('base-a1').value) || 100;
-        const baseA2 = parseFloat(document.getElementById('base-a2').value) || 100;
-        
-        series1 = [baseA1, baseA1 / 2, baseA1];
-        series2 = [baseA2, baseA2 / 2, baseA2];
-        isInside1 = false;
-        isInside2 = false;
-
-        let oldBets = [...betsHistory];
-        betsHistory = [];
-
-        oldBets.forEach(b => {
-            if (b.id !== excludeId) {
-                let sNum = b.assignedSeries;
-                let currentS = sNum === '1' ? [...series1] : [...series2];
-                b.seriesStateBefore = currentS.join('-');
-
-                if (sNum === '1') {
-                    updateSeriesState(1, b.result, b.risk);
-                } else {
-                    updateSeriesState(2, b.result, b.risk);
-                }
-                betsHistory.push(b);
-            }
-        });
-
-        saveToCloud();
-    }
-
     function render() {
         const tbody = document.getElementById('bets-tbody');
         tbody.innerHTML = '';
@@ -670,9 +670,9 @@
         let losses = 0;
 
         let evaluatedBets = betsHistory.map(b => {
-            runningBalance += b.pnl;
             if (b.result === 'W') wins++;
             if (b.result === 'L') losses++;
+            runningBalance += b.pnl;
             return { ...b, runningBalance: runningBalance };
         });
 
@@ -683,6 +683,24 @@
 
         filteredBets.forEach((b, index) => {
             const tr = document.createElement('tr');
+            
+            let badgeClass = 'badge-pending';
+            let pnlText = '$0.00';
+            let pnlColor = 'var(--text-color)';
+
+            if (b.result === 'W') {
+                badgeClass = 'badge-win';
+                pnlText = `+$${b.pnl.toFixed(2)}`;
+                pnlColor = 'var(--success-text)';
+            } else if (b.result === 'L') {
+                badgeClass = 'badge-loss';
+                pnlText = `-$${Math.abs(b.pnl).toFixed(2)}`;
+                pnlColor = 'var(--danger-text)';
+            } else {
+                pnlText = 'Pendiente';
+                pnlColor = 'var(--pending-text)';
+            }
+
             tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${b.date}</td>
@@ -692,12 +710,20 @@
                 <td>${formatOdds(b.odds)}</td>
                 <td>$${b.risk.toFixed(2)}</td>
                 <td>$${b.toWin.toFixed(2)}</td>
-                <td><span class="${b.result === 'W' ? 'badge-win' : 'badge-loss'}">${b.result}</span></td>
-                <td style="color: ${b.pnl >= 0 ? 'var(--success-text)' : 'var(--danger-text)'}; font-weight: 600;">
-                    ${b.pnl >= 0 ? '+' : ''}$${b.pnl.toFixed(2)}
-                </td>
+                <td><span class="${badgeClass}">${b.result}</span></td>
+                <td style="color: ${pnlColor}; font-weight: 600;">${pnlText}</td>
                 <td style="font-weight: 700;">$${b.runningBalance.toFixed(2)}</td>
-                <td><button class="btn btn-danger btn-sm" onclick="deleteBet(${b.id})">Borrar</button></td>
+                <td>
+                    <div class="action-cell">
+                        ${b.result === 'P' ? `
+                            <button class="btn btn-success btn-sm" onclick="updateBetResult(${b.id}, 'W')">W</button>
+                            <button class="btn btn-danger btn-sm" onclick="updateBetResult(${b.id}, 'L')">L</button>
+                        ` : `
+                            <button class="btn btn-secondary btn-sm" onclick="updateBetResult(${b.id}, 'P')">Editar</button>
+                        `}
+                        <button class="btn btn-danger btn-sm" onclick="deleteBet(${b.id})">Borrar</button>
+                    </div>
+                </td>
             `;
             tbody.appendChild(tr);
         });
@@ -721,12 +747,7 @@
     function clearData() {
         if (confirm('¿Deseas borrar todo el historial y reiniciar las series en la nube?')) {
             betsHistory = [];
-            const baseA1 = parseFloat(document.getElementById('base-a1').value) || 100;
-            const baseA2 = parseFloat(document.getElementById('base-a2').value) || 100;
-            series1 = [baseA1, baseA1 / 2, baseA1];
-            series2 = [baseA2, baseA2 / 2, baseA2];
-            isInside1 = false;
-            isInside2 = false;
+            rebuildAllState();
             saveToCloud();
         }
     }
