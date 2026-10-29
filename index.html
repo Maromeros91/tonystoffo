@@ -11,25 +11,6 @@
 
     <style>
         :root {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success-bg: #dcfce7;
-            --success-text: #166534;
-            --danger-bg: #fee2e2;
-            --danger-text: #991b1b;
-            --pending-bg: #fef3c7;
-            --pending-text: #92400e;
-            --header-bg: #0f172a;
-            --header-text: #ffffff;
-            --input-bg: #ffffff;
-        }
-
-        [data-theme="dark"] {
             --bg-color: #0f172a;
             --card-bg: #1e293b;
             --text-color: #f8fafc;
@@ -46,6 +27,25 @@
             --header-bg: #020617;
             --header-text: #ffffff;
             --input-bg: #0f172a;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success-bg: #dcfce7;
+            --success-text: #166534;
+            --danger-bg: #fee2e2;
+            --danger-text: #991b1b;
+            --pending-bg: #fef3c7;
+            --pending-text: #92400e;
+            --header-bg: #0f172a;
+            --header-text: #ffffff;
+            --input-bg: #ffffff;
         }
 
         body {
@@ -74,6 +74,7 @@
             align-items: center;
             gap: 10px;
             font-size: 1.8rem;
+            margin: 0;
         }
 
         .theme-toggle {
@@ -88,9 +89,37 @@
             transition: all 0.2s;
         }
 
-        .dashboard {
+        .info-panel {
+            background: var(--card-bg);
+            border-left: 4px solid var(--primary);
+            padding: 16px;
+            margin-bottom: 25px;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.95rem;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-item h4 {
+            margin: 0 0 5px 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .info-item span {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
@@ -153,11 +182,15 @@
             color: var(--text-color);
         }
 
-        /* Estilo mejorado para visibilidad del calendario */
         input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(var(--calendar-invert, 0));
+            filter: invert(var(--calendar-invert, 1));
             cursor: pointer;
             padding: 4px;
+        }
+
+        [data-theme="light"] input[type="date"] {
+            --calendar-invert: 0;
+            color-scheme: light;
         }
 
         [data-theme="dark"] input[type="date"] {
@@ -166,7 +199,7 @@
         }
 
         .btn {
-            padding: 8px 12px;
+            padding: 9px 14px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -180,14 +213,23 @@
         .btn-secondary { background: #475569; color: white; }
         .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
 
-        .filter-container {
+        .filter-section {
             display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .filter-btn {
-            padding: 6px 14px;
+            padding: 7px 14px;
             border: 1px solid var(--border-color);
             background: var(--card-bg);
             color: var(--text-color);
@@ -198,9 +240,9 @@
         }
 
         .filter-btn.active {
-            background: var(--header-bg);
-            color: var(--header-text);
-            border-color: var(--header-bg);
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
         .table-responsive {
@@ -236,24 +278,9 @@
         .badge-win { background: var(--success-bg); color: var(--success-text); padding: 4px 8px; border-radius: 6px; font-weight: 700; display: inline-block; }
         .badge-loss { background: var(--danger-bg); color: var(--danger-text); padding: 4px 8px; border-radius: 6px; font-weight: 700; display: inline-block; }
         .badge-pending { background: var(--pending-bg); color: var(--pending-text); padding: 4px 8px; border-radius: 6px; font-weight: 700; display: inline-block; }
-        .badge-s1 { background: #e2e8f0; color: #1e293b; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-block; }
-        .badge-s2 { background: #fef3c7; color: #92400e; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-block; }
-
-        .info-panel {
-            background: var(--card-bg);
-            border-left: 4px solid var(--primary);
-            padding: 14px 18px;
-            margin-bottom: 25px;
-            border-radius: 0 12px 12px 0;
-            font-size: 0.95rem;
-            display: flex;
-            gap: 25px;
-            flex-wrap: wrap;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-            border-top: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-        }
+        .badge-s1 { background: #334155; color: #f8fafc; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-block; }
+        .badge-s2 { background: #78350f; color: #fde68a; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-block; }
+        .badge-attempt { background: var(--primary); color: white; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.8rem; }
 
         .actions {
             display: flex;
@@ -278,7 +305,7 @@
         }
     </style>
 </head>
-<body data-theme="light">
+<body data-theme="dark">
 
 <div class="container">
     <div class="header-flex">
@@ -290,9 +317,18 @@
     </div>
     
     <div class="info-panel">
-        <div><strong>Serie 1 Vigente:</strong> <span id="info-s1">100-50-100</span></div>
-        <div><strong>Serie 2 Vigente:</strong> <span id="info-s2">100-50-100</span></div>
-        <div><strong>Objetivo Mensual:</strong> $<span id="info-target">400.00</span></div>
+        <div class="info-item">
+            <h4>Serie 1 (Vigente)</h4>
+            <span id="info-s1">100-50-100 (Intento 0/7)</span>
+        </div>
+        <div class="info-item">
+            <h4>Serie 2 (Vigente)</h4>
+            <span id="info-s2">100-50-100 (Intento 0/7)</span>
+        </div>
+        <div class="info-item">
+            <h4>Objetivo Mensual</h4>
+            <span id="info-target">$400.00</span>
+        </div>
     </div>
 
     <!-- Dashboard -->
@@ -382,11 +418,17 @@
         </div>
     </div>
 
-    <!-- Filtro -->
-    <div class="filter-container">
-        <button class="filter-btn active" id="btn-filter-all" onclick="setFilter('all')">Todas las Series</button>
-        <button class="filter-btn" id="btn-filter-1" onclick="setFilter('1')">Solo Serie 1</button>
-        <button class="filter-btn" id="btn-filter-2" onclick="setFilter('2')">Solo Serie 2</button>
+    <!-- Filtros de Navegación -->
+    <div class="filter-section">
+        <div class="filter-group">
+            <button class="filter-btn active" id="btn-scope-active" onclick="setScope('active')">🎯 Solo Ciclo Vigente</button>
+            <button class="filter-btn" id="btn-scope-all" onclick="setScope('all')">📜 Historial Completo</button>
+        </div>
+        <div class="filter-group">
+            <button class="filter-btn active" id="btn-filter-all" onclick="setFilter('all')">Todas las Series</button>
+            <button class="filter-btn" id="btn-filter-1" onclick="setFilter('1')">Solo Serie 1</button>
+            <button class="filter-btn" id="btn-filter-2" onclick="setFilter('2')">Solo Serie 2</button>
+        </div>
     </div>
 
     <!-- Tabla -->
@@ -394,7 +436,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>Intento</th>
                     <th>Fecha</th>
                     <th>Serie</th>
                     <th>Estado Serie</th>
@@ -438,11 +480,18 @@
     let series2 = [100, 50, 100];
     let isInside1 = false;
     let isInside2 = false;
+    let attempts1 = 0;
+    let attempts2 = 0;
+    let winsCycle1 = 0;
+    let winsCycle2 = 0;
+    let cycle1Count = 1;
+    let cycle2Count = 1;
     let monthlyTarget = 400;
-    let activeFilter = 'all';
+    
+    let activeFilter = 'all'; // 'all', '1', '2'
+    let activeScope = 'active'; // 'active', 'all'
 
     window.onload = function() {
-        // Establecer la fecha local actual exacta (evita desfase de zona horaria)
         const tzOffset = new Date().getTimezoneOffset() * 60000;
         const localISOTime = new Date(Date.now() - tzOffset).toISOString().split('T')[0];
         document.getElementById('input-date').value = localISOTime;
@@ -468,10 +517,6 @@
         document.getElementById('sync-indicator').innerText = '⏳ Guardando...';
         db.ref('stoffo_app_data').set({
             betsHistory: betsHistory,
-            series1: series1,
-            series2: series2,
-            isInside1: isInside1,
-            isInside2: isInside2,
             monthlyTarget: monthlyTarget
         });
     }
@@ -485,7 +530,7 @@
     }
 
     function loadTheme() {
-        const savedTheme = localStorage.getItem('stoffo_theme') || 'light';
+        const savedTheme = localStorage.getItem('stoffo_theme') || 'dark';
         document.body.setAttribute('data-theme', savedTheme);
     }
 
@@ -562,6 +607,13 @@
         render();
     }
 
+    function setScope(scope) {
+        activeScope = scope;
+        document.getElementById('btn-scope-active').classList.toggle('active', scope === 'active');
+        document.getElementById('btn-scope-all').classList.toggle('active', scope === 'all');
+        render();
+    }
+
     function updateConfig() {
         monthlyTarget = parseFloat(document.getElementById('target-input').value) || 400;
         rebuildAllState();
@@ -620,20 +672,47 @@
         series2 = [baseA2, baseA2 / 2, baseA2];
         isInside1 = false;
         isInside2 = false;
+        attempts1 = 0;
+        attempts2 = 0;
+        winsCycle1 = 0;
+        winsCycle2 = 0;
+        cycle1Count = 1;
+        cycle2Count = 1;
 
         betsHistory.forEach(b => {
             let sNum = b.assignedSeries;
             let currentS = sNum === '1' ? [...series1] : [...series2];
             b.seriesStateBefore = currentS.join('-');
 
+            if (sNum === '1') {
+                b.cycleNumber = cycle1Count;
+                if (b.result !== 'P') {
+                    attempts1++;
+                    b.attemptNumber = attempts1;
+                    if (b.result === 'W') winsCycle1++;
+                } else {
+                    b.attemptNumber = attempts1 + 1; // estimado
+                }
+            } else {
+                b.cycleNumber = cycle2Count;
+                if (b.result !== 'P') {
+                    attempts2++;
+                    b.attemptNumber = attempts2;
+                    if (b.result === 'W') winsCycle2++;
+                } else {
+                    b.attemptNumber = attempts2 + 1; // estimado
+                }
+            }
+
             if (b.result === 'P') {
                 b.pnl = 0;
             } else {
                 b.pnl = (b.result === 'W') ? b.toWin : -b.risk;
+                
                 if (sNum === '1') {
-                    updateSeriesState(1, b.result, b.risk);
+                    updateSeriesState(1, b.result, b.risk, baseA1);
                 } else {
-                    updateSeriesState(2, b.result, b.risk);
+                    updateSeriesState(2, b.result, b.risk, baseA2);
                 }
             }
         });
@@ -641,39 +720,56 @@
         render();
     }
 
-    function updateSeriesState(sNum, result, riskAmount) {
+    function updateSeriesState(sNum, result, riskAmount, baseA) {
         let current = sNum === 1 ? [...series1] : [...series2];
         let isInside = sNum === 1 ? isInside1 : isInside2;
-        const baseA = parseFloat(document.getElementById(`base-a${sNum}`).value) || 100;
+        let attempts = sNum === 1 ? attempts1 : attempts2;
+        let wins = sNum === 1 ? winsCycle1 : winsCycle2;
+        let cycle = sNum === 1 ? cycle1Count : cycle2Count;
 
-        if (result === 'W') {
-            if (!isInside && current.length === 3) {
-                current = [current[1]];
-                isInside = true;
-            } else {
-                current = [baseA, baseA / 2, baseA];
-                isInside = false;
-            }
-        } else if (result === 'L') {
-            if (current.length === 3) {
-                const addUnit = riskAmount / 3;
-                current = [
-                    parseFloat((current[0] + addUnit).toFixed(2)),
-                    parseFloat((current[1] + addUnit).toFixed(2)),
-                    parseFloat((current[2] + addUnit).toFixed(2))
-                ];
-            } else if (current.length === 1) {
-                const addUnit = riskAmount;
-                current = [parseFloat((current[0] + addUnit).toFixed(2))];
+        // Regla de Re-inicio por 2 victorias o llegar a 7 intentos
+        if (wins >= 2 || attempts >= 7) {
+            current = [baseA, baseA / 2, baseA];
+            isInside = false;
+            attempts = 0;
+            wins = 0;
+            cycle++;
+        } else {
+            if (result === 'W') {
+                if (!isInside && current.length === 3) {
+                    current = [current[1]];
+                    isInside = true;
+                } else {
+                    current = [baseA, baseA / 2, baseA];
+                    isInside = false;
+                }
+            } else if (result === 'L') {
+                if (current.length === 3) {
+                    const addUnit = riskAmount / 3;
+                    current = [
+                        parseFloat((current[0] + addUnit).toFixed(2)),
+                        parseFloat((current[1] + addUnit).toFixed(2)),
+                        parseFloat((current[2] + addUnit).toFixed(2))
+                    ];
+                } else if (current.length === 1) {
+                    const addUnit = riskAmount;
+                    current = [parseFloat((current[0] + addUnit).toFixed(2))];
+                }
             }
         }
 
         if (sNum === 1) {
             series1 = current;
             isInside1 = isInside;
+            attempts1 = attempts;
+            winsCycle1 = wins;
+            cycle1Count = cycle;
         } else {
             series2 = current;
             isInside2 = isInside;
+            attempts2 = attempts;
+            winsCycle2 = wins;
+            cycle2Count = cycle;
         }
     }
 
@@ -692,18 +788,26 @@
             return { ...b, runningBalance: runningBalance };
         });
 
-        const filteredBets = evaluatedBets.filter(b => {
+        // Filtrar por Serie (1, 2, Todas)
+        let filteredBets = evaluatedBets.filter(b => {
             if (activeFilter === 'all') return true;
             return b.assignedSeries === activeFilter;
         });
 
+        // Filtrar por Ámbito (Solo Vigente vs Completo)
+        if (activeScope === 'active') {
+            filteredBets = filteredBets.filter(b => {
+                if (b.assignedSeries === '1') return b.cycleNumber === cycle1Count;
+                if (b.assignedSeries === '2') return b.cycleNumber === cycle2Count;
+                return true;
+            });
+        }
+
         // Invertir para mostrar las más recientes arriba
         const reversedBets = [...filteredBets].reverse();
-        const totalFiltered = reversedBets.length;
 
-        reversedBets.forEach((b, index) => {
+        reversedBets.forEach((b) => {
             const tr = document.createElement('tr');
-            const displayIndex = totalFiltered - index; // Numeración descendente lógica
 
             let badgeClass = 'badge-pending';
             let pnlText = '$0.00';
@@ -723,9 +827,9 @@
             }
 
             tr.innerHTML = `
-                <td>${displayIndex}</td>
+                <td><span class="badge-attempt">${b.attemptNumber || '-'}/7</span></td>
                 <td>${b.date}</td>
-                <td><span class="${b.assignedSeries === '1' ? 'badge-s1' : 'badge-s2'}">Serie ${b.assignedSeries}</span></td>
+                <td><span class="${b.assignedSeries === '1' ? 'badge-s1' : 'badge-s2'}">Serie ${b.assignedSeries} (C${b.cycleNumber})</span></td>
                 <td>${b.seriesStateBefore}</td>
                 <td>${b.pick}</td>
                 <td>${formatOdds(b.odds)}</td>
@@ -758,9 +862,9 @@
         document.getElementById('disp-record').innerText = `${wins} - ${losses}`;
         document.getElementById('disp-progress').innerText = `${progress}%`;
 
-        document.getElementById('info-s1').innerText = series1.join('-');
-        document.getElementById('info-s2').innerText = series2.join('-');
-        document.getElementById('info-target').innerText = monthlyTarget.toFixed(2);
+        document.getElementById('info-s1').innerText = `${series1.join('-')} (${attempts1}/7 int - ${winsCycle1}/2 win)`;
+        document.getElementById('info-s2').innerText = `${series2.join('-')} (${attempts2}/7 int - ${winsCycle2}/2 win)`;
+        document.getElementById('info-target').innerText = `$${monthlyTarget.toFixed(2)}`;
 
         onSeriesChange();
     }
@@ -779,12 +883,12 @@
             return;
         }
 
-        let csv = 'Fecha,Serie,Estado Serie,Pick,Momio,Apostado,A Ganar,Resultado,PnL,Balance\n';
+        let csv = 'Intento,Fecha,Serie,Ciclo,Estado Serie,Pick,Momio,Apostado,A Ganar,Resultado,PnL,Balance\n';
         let runBalance = 0;
 
         betsHistory.forEach(b => {
             runBalance += b.pnl;
-            csv += `"${b.date}","Serie ${b.assignedSeries}","${b.seriesStateBefore}","${b.pick}",${formatOdds(b.odds)},${b.risk.toFixed(2)},${b.toWin.toFixed(2)},${b.result},${b.pnl.toFixed(2)},${runBalance.toFixed(2)}\n`;
+            csv += `"${b.attemptNumber || 0}/7","${b.date}","Serie ${b.assignedSeries}",${b.cycleNumber},"${b.seriesStateBefore}","${b.pick}",${formatOdds(b.odds)},${b.risk.toFixed(2)},${b.toWin.toFixed(2)},${b.result},${b.pnl.toFixed(2)},${runBalance.toFixed(2)}\n`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
