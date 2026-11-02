@@ -202,7 +202,6 @@
             font-weight: 500;
         }
 
-        /* Modal / Panel Flotante de Configuración Avanzada */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -483,7 +482,7 @@
         </div>
     </div>
 
-    <!-- Modal de Configuración Avanzada (Junto a la nube) -->
+    <!-- Modal de Configuración Avanzada -->
     <div class="modal-overlay" id="settings-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -523,7 +522,7 @@
             </div>
             <div class="form-group">
                 <label for="input-pick">Pick / Selección</label>
-                <input type="text" id="input-pick" placeholder="Ej. Ravens ML">
+                <input type="text" id="input-pick">
             </div>
             <div class="form-group">
                 <label for="input-odds">Momio Americano</label>
@@ -845,7 +844,7 @@
         });
 
         if (!isDropdownInitialized) {
-            select.value = currentMonth; // Selecciona automáticamente el mes actual al cargar
+            select.value = currentMonth;
             isDropdownInitialized = true;
         } else if (Array.from(select.options).some(o => o.value === currentVal)) {
             select.value = currentVal;
@@ -1057,21 +1056,17 @@
             tbody.appendChild(tr);
         });
 
-        // Totales Globales
         const totalGamesGlobal = totalWins + totalLosses;
         const totalEffGlobal = totalGamesGlobal > 0 ? ((totalWins / totalGamesGlobal) * 100).toFixed(2) : '0.00';
 
-        // Métricas del Mes
         const totalGamesMonth = monthWins + monthLosses;
         const monthEff = totalGamesMonth > 0 ? ((monthWins / totalGamesMonth) * 100).toFixed(2) : '0.00';
         const progress = ((monthBalance / monthlyTarget) * 100).toFixed(2);
 
-        // Actualizar Tarjetas Totales
         document.getElementById('disp-total-balance-card').innerText = `$${totalRunningBalance.toFixed(2)}`;
         document.getElementById('disp-total-eff').innerText = `${totalEffGlobal}%`;
         document.getElementById('disp-total-record').innerText = `${totalWins} - ${totalLosses}`;
 
-        // Actualizar Tarjetas de Mes
         document.getElementById('title-balance').innerText = (selectedMonth === 'all') ? 'Balance General (Meses)' : 'Balance del Mes';
         document.getElementById('disp-balance').innerText = `$${monthBalance.toFixed(2)}`;
         document.getElementById('disp-month-label').innerText = (selectedMonth === 'all') ? 'Acumulado filtrado' : `Mes: ${selectedMonth}`;
@@ -1106,7 +1101,8 @@
 
         betsHistory.forEach(b => {
             runBalance += b.pnl;
-            csv += `"${b.attemptNumber || 0}/7","${b.date}","Serie ${b.assignedSeries}",${b.cycleNumber},"${b.seriesStateBefore}","${b.pick}",${formatOdds(b.odds)},${b.risk.toFixed(2)},${b.toWin.toFixed(2)},${b.result},${b.pnl.toFixed(2)},${runBalance.toFixed(2)}\n`;
+            csv += `"${b.attemptNumber || 0}/7","${b.date}","Serie ${b.assignedSeries}",${b.cycleNumber},"${b.seriesStateBefore}","${b.pick}",${formatOdds(b.odds)},${b.risk.toFixed(2)},${b.toWin.toFixed(2)},${b.result},${b.pnl.toFixed(2)},${runBalance.toFixed(2)} 
+`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
