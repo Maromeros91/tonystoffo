@@ -11,38 +11,34 @@
 
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
+            --bg-color: #0b0f19;
+            --card-bg: #131b2e;
+            --card-hover: #1e293b;
             --text-color: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #334155;
+            --border-color: #1e293b;
             --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --success-bg: #064e3b;
-            --success-text: #6ee7b7;
-            --danger-bg: #7f1d1d;
-            --danger-text: #fca5a5;
-            --pending-bg: #78350f;
-            --pending-text: #fde68a;
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --success-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
+            --danger-gradient: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            --purple-gradient: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
             --header-bg: #020617;
             --header-text: #ffffff;
             --input-bg: #0f172a;
         }
 
         [data-theme="light"] {
-            --bg-color: #f8fafc;
+            --bg-color: #f1f5f9;
             --card-bg: #ffffff;
-            --text-color: #1e293b;
+            --card-hover: #f8fafc;
+            --text-color: #0f172a;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
             --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success-bg: #dcfce7;
-            --success-text: #166534;
-            --danger-bg: #fee2e2;
-            --danger-text: #991b1b;
-            --pending-bg: #fef3c7;
-            --pending-text: #92400e;
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            --purple-gradient: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
             --header-bg: #0f172a;
             --header-text: #ffffff;
             --input-bg: #ffffff;
@@ -58,7 +54,7 @@
         }
 
         .container {
-            max-width: 1300px;
+            max-width: 1350px;
             margin: 0 auto;
         }
 
@@ -67,6 +63,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .header-flex h2 {
@@ -77,7 +75,14 @@
             margin: 0;
         }
 
-        .theme-toggle {
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .theme-toggle, .settings-btn {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-color);
@@ -85,21 +90,26 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.85rem;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
             transition: all 0.2s;
+        }
+
+        .theme-toggle:hover, .settings-btn:hover {
+            background: var(--card-hover);
         }
 
         .info-panel {
             background: var(--card-bg);
             border-left: 4px solid var(--primary);
             padding: 16px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             border-radius: 0 12px 12px 0;
             font-size: 0.95rem;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
             border-top: 1px solid var(--border-color);
             border-right: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color);
@@ -107,30 +117,65 @@
 
         .info-item h4 {
             margin: 0 0 5px 0;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .info-item span {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 700;
         }
 
-        .dashboard {
+        .section-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin: 25px 0 12px 0;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 18px;
+            margin-bottom: 15px;
         }
 
         .card {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            padding: 22px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
             border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .card-primary::before { background: var(--primary-gradient); }
+        .card-success::before { background: var(--success-gradient); }
+        .card-purple::before { background: var(--purple-gradient); }
+        .card-danger::before { background: var(--danger-gradient); }
 
         .card .title {
             font-size: 0.8rem;
@@ -138,12 +183,68 @@
             text-transform: uppercase;
             font-weight: 700;
             letter-spacing: 0.05em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .card .value {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 800;
-            margin-top: 5px;
+            margin-top: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .card .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* Modal / Panel Flotante de Configuración Avanzada */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
         }
 
         .controls {
@@ -208,8 +309,8 @@
         }
 
         .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: #16a34a; color: white; }
-        .btn-danger { background: #dc2626; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-danger { background: #ef4444; color: white; }
         .btn-secondary { background: #475569; color: white; }
         .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
 
@@ -220,12 +321,17 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
         }
 
         .filter-group {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .filter-btn {
@@ -275,9 +381,9 @@
             text-align: center !important;
         }
 
-        .badge-win { background: var(--success-bg); color: var(--success-text); padding: 4px 8px; border-radius: 6px; font-weight: 700; display: inline-block; }
-        .badge-loss { background: var(--danger-bg); color: var(--danger-text); padding: 4px 8px; border-radius: 6px; font-weight: 700; display: inline-block; }
-        .badge-pending { background: var(--pending-bg); color: var(--pending-text); padding: 4px 8px; border-radius: 6px; font-weight: 700; display: inline-block; }
+        .badge-win { background: var(--success-gradient); color: #ffffff; padding: 4px 10px; border-radius: 6px; font-weight: 700; display: inline-block; }
+        .badge-loss { background: var(--danger-gradient); color: #ffffff; padding: 4px 10px; border-radius: 6px; font-weight: 700; display: inline-block; }
+        .badge-pending { background: #f59e0b; color: #ffffff; padding: 4px 10px; border-radius: 6px; font-weight: 700; display: inline-block; }
         .badge-s1 { background: #334155; color: #f8fafc; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-block; }
         .badge-s2 { background: #78350f; color: #fde68a; padding: 3px 8px; border-radius: 6px; font-weight: 600; display: inline-block; }
         .badge-attempt { background: var(--primary); color: white; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.8rem; }
@@ -291,7 +397,7 @@
         .sync-status {
             font-size: 0.85rem;
             font-weight: 600;
-            color: #16a34a;
+            color: #10b981;
             display: flex;
             align-items: center;
             gap: 5px;
@@ -310,9 +416,10 @@
 <div class="container">
     <div class="header-flex">
         <h2>📊 "Hey, I could do this for a living." 🎯🏈⚾</h2>
-        <div style="display:flex; align-items:center; gap: 15px;">
+        <div class="header-actions">
             <span class="sync-status" id="sync-indicator">☁️ Nube Sincronizada</span>
-            <button class="theme-toggle" onclick="toggleTheme()">🌓 Cambiar Tema</button>
+            <button class="settings-btn" onclick="openSettingsModal()">⚙️ Parámetros</button>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓 Tema</button>
         </div>
     </div>
     
@@ -331,45 +438,71 @@
         </div>
     </div>
 
-    <!-- Dashboard -->
-    <div class="dashboard">
-        <div class="card">
-            <div class="title">Balance Total</div>
-            <div class="value" id="disp-balance">$0.00</div>
+    <!-- SECCIÓN 1: CONTADORES TOTALES (HISTÓRICOS) -->
+    <div class="section-title">🌐 Contadores Totales (Histórico General)</div>
+    <div class="dashboard-grid">
+        <div class="card card-primary">
+            <div class="title">Balance Histórico <span>💰</span></div>
+            <div class="value" id="disp-total-balance-card">$0.00</div>
+            <div class="subtitle">Acumulado global de todas las series</div>
         </div>
-        <div class="card">
-            <div class="title">Efectividad</div>
-            <div class="value" id="disp-eff">0.00%</div>
+        <div class="card card-purple">
+            <div class="title">Efectividad Global <span>📈</span></div>
+            <div class="value" id="disp-total-eff">0.00%</div>
+            <div class="subtitle">Rendimiento general histórico</div>
         </div>
-        <div class="card">
-            <div class="title">Récord (G - P)</div>
-            <div class="value" id="disp-record">0 - 0</div>
-        </div>
-        <div class="card">
-            <div class="title">Progreso Objetivo</div>
-            <div class="value" id="disp-progress">0.00%</div>
+        <div class="card card-success">
+            <div class="title">Récord Global (G - P) <span>🎯</span></div>
+            <div class="value" id="disp-total-record">0 - 0</div>
+            <div class="subtitle">Total de aciertos y desaciertos</div>
         </div>
     </div>
 
-    <!-- Configuración -->
-    <div class="controls">
-        <h3>1. Configuración de Parámetros</h3>
-        <div class="form-grid">
-            <div class="form-group">
+    <!-- SECCIÓN 2: RENDIMIENTO DEL MES SELECCIONADO -->
+    <div class="section-title">📅 Rendimiento del Mes</div>
+    <div class="dashboard-grid">
+        <div class="card card-primary">
+            <div class="title" id="title-balance">Balance del Mes <span>💵</span></div>
+            <div class="value" id="disp-balance">$0.00</div>
+            <div class="subtitle" id="disp-month-label">Filtrado por mes actual</div>
+        </div>
+        <div class="card card-purple">
+            <div class="title">Efectividad (Mes) <span>📊</span></div>
+            <div class="value" id="disp-eff">0.00%</div>
+            <div class="subtitle">Aciertos / Total del mes</div>
+        </div>
+        <div class="card card-success">
+            <div class="title">Récord (Mes) <span>🏆</span></div>
+            <div class="value" id="disp-record">0 - 0</div>
+            <div class="subtitle">Ganadas - Perdidas mensuales</div>
+        </div>
+        <div class="card card-danger">
+            <div class="title">Progreso Objetivo <span>⚡</span></div>
+            <div class="value" id="disp-progress">0.00%</div>
+            <div class="subtitle">Cumplimiento de meta mensual</div>
+        </div>
+    </div>
+
+    <!-- Modal de Configuración Avanzada (Junto a la nube) -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ Configuración de Parámetros</h3>
+                <button class="close-modal" onclick="closeSettingsModal()">✕</button>
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
                 <label for="base-a1">Base Exterior 'a' (Serie 1)</label>
                 <input type="number" id="base-a1" value="100" step="10">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 15px;">
                 <label for="base-a2">Base Exterior 'a' (Serie 2)</label>
                 <input type="number" id="base-a2" value="100" step="10">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom: 20px;">
                 <label for="target-input">Objetivo Mensual ($)</label>
                 <input type="number" id="target-input" value="400" step="50">
             </div>
-            <div class="form-group">
-                <button class="btn btn-secondary" onclick="updateConfig()">Guardar Configuración</button>
-            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="updateConfig()">Guardar Cambios</button>
         </div>
     </div>
 
@@ -418,16 +551,22 @@
         </div>
     </div>
 
-    <!-- Filtros de Navegación -->
+    <!-- Filtros de Navegación y Mes -->
     <div class="filter-section">
+        <div class="filter-group">
+            <span style="font-size: 0.85rem; font-weight: 600;">📅 Mes:</span>
+            <select id="month-filter" onchange="render()" style="padding: 6px 10px; border-radius: 8px; background: var(--input-bg); color: var(--text-color); border: 1px solid var(--border-color);">
+                <option value="all">Todos los meses</option>
+            </select>
+        </div>
         <div class="filter-group">
             <button class="filter-btn active" id="btn-scope-active" onclick="setScope('active')">🎯 Solo Ciclo Vigente</button>
             <button class="filter-btn" id="btn-scope-all" onclick="setScope('all')">📜 Historial Completo</button>
         </div>
         <div class="filter-group">
-            <button class="filter-btn active" id="btn-filter-all" onclick="setFilter('all')">Todas las Series</button>
-            <button class="filter-btn" id="btn-filter-1" onclick="setFilter('1')">Solo Serie 1</button>
-            <button class="filter-btn" id="btn-filter-2" onclick="setFilter('2')">Solo Serie 2</button>
+            <button class="filter-btn active" id="btn-filter-all" onclick="setFilter('all')">Todas</button>
+            <button class="filter-btn" id="btn-filter-1" onclick="setFilter('1')">Serie 1</button>
+            <button class="filter-btn" id="btn-filter-2" onclick="setFilter('2')">Serie 2</button>
         </div>
     </div>
 
@@ -500,6 +639,14 @@
         listenToCloudData();
     };
 
+    function openSettingsModal() {
+        document.getElementById('settings-modal').style.display = 'flex';
+    }
+
+    function closeSettingsModal() {
+        document.getElementById('settings-modal').style.display = 'none';
+    }
+
     function listenToCloudData() {
         db.ref('stoffo_app_data').on('value', (snapshot) => {
             const data = snapshot.val();
@@ -508,6 +655,7 @@
                 monthlyTarget = data.monthlyTarget || 400;
                 document.getElementById('target-input').value = monthlyTarget;
             }
+            updateMonthDropdown();
             rebuildAllState();
             document.getElementById('sync-indicator').innerText = '☁️ Nube Sincronizada';
         });
@@ -616,6 +764,7 @@
 
     function updateConfig() {
         monthlyTarget = parseFloat(document.getElementById('target-input').value) || 400;
+        closeSettingsModal();
         rebuildAllState();
         saveToCloud();
     }
@@ -641,6 +790,7 @@
         };
 
         betsHistory.push(betEntry);
+        updateMonthDropdown();
         rebuildAllState();
         saveToCloud();
 
@@ -659,8 +809,48 @@
     function deleteBet(id) {
         if (confirm('¿Estás seguro de eliminar esta apuesta? El historial se recalculará.')) {
             betsHistory = betsHistory.filter(b => b.id !== id);
+            updateMonthDropdown();
             rebuildAllState();
             saveToCloud();
+        }
+    }
+
+    let isDropdownInitialized = false;
+
+    function updateMonthDropdown() {
+        const select = document.getElementById('month-filter');
+        const currentVal = select.value;
+        
+        const monthsSet = new Set();
+        betsHistory.forEach(b => {
+            if (b.date && b.date.length >= 7) {
+                monthsSet.add(b.date.substring(0, 7));
+            }
+        });
+
+        const tzOffset = new Date().getTimezoneOffset() * 60000;
+        const currentMonth = new Date(Date.now() - tzOffset).toISOString().substring(0, 7);
+        monthsSet.add(currentMonth);
+
+        const sortedMonths = Array.from(monthsSet).sort().reverse();
+
+        select.innerHTML = '<option value="all">Todos los meses</option>';
+        sortedMonths.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m;
+            const [y, mo] = m.split('-');
+            const dateObj = new Date(y, mo - 1, 1);
+            opt.innerText = dateObj.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+            select.appendChild(opt);
+        });
+
+        if (!isDropdownInitialized) {
+            select.value = currentMonth; // Selecciona automáticamente el mes actual al cargar
+            isDropdownInitialized = true;
+        } else if (Array.from(select.options).some(o => o.value === currentVal)) {
+            select.value = currentVal;
+        } else {
+            select.value = currentMonth;
         }
     }
 
@@ -691,7 +881,7 @@
                     b.attemptNumber = attempts1;
                     if (b.result === 'W') winsCycle1++;
                 } else {
-                    b.attemptNumber = attempts1 + 1; // estimado
+                    b.attemptNumber = attempts1 + 1;
                 }
             } else {
                 b.cycleNumber = cycle2Count;
@@ -700,7 +890,7 @@
                     b.attemptNumber = attempts2;
                     if (b.result === 'W') winsCycle2++;
                 } else {
-                    b.attemptNumber = attempts2 + 1; // estimado
+                    b.attemptNumber = attempts2 + 1;
                 }
             }
 
@@ -727,7 +917,6 @@
         let wins = sNum === 1 ? winsCycle1 : winsCycle2;
         let cycle = sNum === 1 ? cycle1Count : cycle2Count;
 
-        // Regla de Re-inicio por 2 victorias o llegar a 7 intentos
         if (wins >= 2 || attempts >= 7) {
             current = [baseA, baseA / 2, baseA];
             isInside = false;
@@ -777,24 +966,40 @@
         const tbody = document.getElementById('bets-tbody');
         tbody.innerHTML = '';
 
-        let runningBalance = 0;
-        let wins = 0;
-        let losses = 0;
+        let totalRunningBalance = 0;
+        let totalWins = 0;
+        let totalLosses = 0;
+
+        let monthBalance = 0;
+        let monthWins = 0;
+        let monthLosses = 0;
+
+        const selectedMonth = document.getElementById('month-filter').value;
 
         let evaluatedBets = betsHistory.map(b => {
-            if (b.result === 'W') wins++;
-            if (b.result === 'L') losses++;
-            runningBalance += b.pnl;
-            return { ...b, runningBalance: runningBalance };
+            if (b.result === 'W') totalWins++;
+            if (b.result === 'L') totalLosses++;
+            totalRunningBalance += b.pnl;
+            return { ...b, runningBalance: totalRunningBalance };
         });
 
-        // Filtrar por Serie (1, 2, Todas)
         let filteredBets = evaluatedBets.filter(b => {
             if (activeFilter === 'all') return true;
             return b.assignedSeries === activeFilter;
         });
 
-        // Filtrar por Ámbito (Solo Vigente vs Completo)
+        if (selectedMonth !== 'all') {
+            filteredBets = filteredBets.filter(b => b.date && b.date.startsWith(selectedMonth));
+        }
+
+        evaluatedBets.forEach(b => {
+            if (selectedMonth === 'all' || (b.date && b.date.startsWith(selectedMonth))) {
+                if (b.result === 'W') monthWins++;
+                if (b.result === 'L') monthLosses++;
+                monthBalance += b.pnl;
+            }
+        });
+
         if (activeScope === 'active') {
             filteredBets = filteredBets.filter(b => {
                 if (b.assignedSeries === '1') return b.cycleNumber === cycle1Count;
@@ -803,7 +1008,6 @@
             });
         }
 
-        // Invertir para mostrar las más recientes arriba
         const reversedBets = [...filteredBets].reverse();
 
         reversedBets.forEach((b) => {
@@ -816,14 +1020,14 @@
             if (b.result === 'W') {
                 badgeClass = 'badge-win';
                 pnlText = `+$${b.pnl.toFixed(2)}`;
-                pnlColor = 'var(--success-text)';
+                pnlColor = '#10b981';
             } else if (b.result === 'L') {
                 badgeClass = 'badge-loss';
                 pnlText = `-$${Math.abs(b.pnl).toFixed(2)}`;
-                pnlColor = 'var(--danger-text)';
+                pnlColor = '#ef4444';
             } else {
                 pnlText = 'Pendiente';
-                pnlColor = 'var(--pending-text)';
+                pnlColor = '#f59e0b';
             }
 
             tr.innerHTML = `
@@ -853,13 +1057,26 @@
             tbody.appendChild(tr);
         });
 
-        const totalGames = wins + losses;
-        const eff = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(2) : '0.00';
-        const progress = ((runningBalance / monthlyTarget) * 100).toFixed(2);
+        // Totales Globales
+        const totalGamesGlobal = totalWins + totalLosses;
+        const totalEffGlobal = totalGamesGlobal > 0 ? ((totalWins / totalGamesGlobal) * 100).toFixed(2) : '0.00';
 
-        document.getElementById('disp-balance').innerText = `$${runningBalance.toFixed(2)}`;
-        document.getElementById('disp-eff').innerText = `${eff}%`;
-        document.getElementById('disp-record').innerText = `${wins} - ${losses}`;
+        // Métricas del Mes
+        const totalGamesMonth = monthWins + monthLosses;
+        const monthEff = totalGamesMonth > 0 ? ((monthWins / totalGamesMonth) * 100).toFixed(2) : '0.00';
+        const progress = ((monthBalance / monthlyTarget) * 100).toFixed(2);
+
+        // Actualizar Tarjetas Totales
+        document.getElementById('disp-total-balance-card').innerText = `$${totalRunningBalance.toFixed(2)}`;
+        document.getElementById('disp-total-eff').innerText = `${totalEffGlobal}%`;
+        document.getElementById('disp-total-record').innerText = `${totalWins} - ${totalLosses}`;
+
+        // Actualizar Tarjetas de Mes
+        document.getElementById('title-balance').innerText = (selectedMonth === 'all') ? 'Balance General (Meses)' : 'Balance del Mes';
+        document.getElementById('disp-balance').innerText = `$${monthBalance.toFixed(2)}`;
+        document.getElementById('disp-month-label').innerText = (selectedMonth === 'all') ? 'Acumulado filtrado' : `Mes: ${selectedMonth}`;
+        document.getElementById('disp-eff').innerText = `${monthEff}%`;
+        document.getElementById('disp-record').innerText = `${monthWins} - ${monthLosses}`;
         document.getElementById('disp-progress').innerText = `${progress}%`;
 
         document.getElementById('info-s1').innerText = `${series1.join('-')} (${attempts1}/7 int - ${winsCycle1}/2 win)`;
@@ -873,6 +1090,7 @@
         if (confirm('¿Deseas borrar todo el historial y reiniciar las series en la nube?')) {
             betsHistory = [];
             rebuildAllState();
+            updateMonthDropdown();
             saveToCloud();
         }
     }
